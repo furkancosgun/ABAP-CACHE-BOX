@@ -183,7 +183,7 @@ START-OF-SELECTION.
 
 # License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the <a href="https://github.com/furkancosgun/ABAP_CACHE_BOX/blob/main/LICENSE">LICENSE</a> file for details.
 
 # Contributing
 
