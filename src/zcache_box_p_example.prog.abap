@@ -32,32 +32,38 @@ START-OF-SELECTION.
   ENDLOOP.
 
   " Retrieve an entry from the cache
-  TRY.
-      lo_data_cache->get(
-        EXPORTING
-          key             = 'AA'
-        IMPORTING
-          value           = DATA(ls_scarr_aa)
-      ).
-      WRITE: / 'SCARR data for AA:', ls_scarr_aa-carrid, ls_scarr_aa-carrname.
-    CATCH cx_root INTO DATA(lx_root).
-      WRITE: / 'Error retrieving SCARR data:', lx_root->get_text( ).
-  ENDTRY.
+  lo_data_cache->get(
+    EXPORTING
+      key             = 'AA'
+    IMPORTING
+      value           = DATA(ls_scarr_aa)
+    EXCEPTIONS
+      entry_not_found = 1
+      OTHERS          = 2
+    ).
+  IF sy-subrc EQ 0.
+    WRITE: / 'SCARR data for AA:', ls_scarr_aa-carrid, ls_scarr_aa-carrname.
+  ELSE.
+    WRITE: / 'Entry not found'.
+  ENDIF.
 
   " Display the size of the cache
   DATA(cache_size) = lo_data_cache->size( ).
   WRITE: / 'Cache size:', cache_size.
 
   " Delete an entry from the cache
-  TRY.
-      lo_data_cache->delete(
-        EXPORTING
-          key             = 'AA'
-      ).
-      WRITE: / 'Entry with key AA deleted from cache.'.
-    CATCH cx_root INTO lx_root.
-      WRITE: / 'Error deleting cache entry:', lx_root->get_text( ).
-  ENDTRY.
+  lo_data_cache->delete(
+    EXPORTING
+      key             = 'AA'
+    EXCEPTIONS
+      entry_not_found = 1
+      OTHERS          = 2
+  ).
+  IF sy-subrc EQ 0.
+    WRITE: / 'Entry with key AA deleted from cache.'.
+  ELSE.
+    WRITE: / 'Entry not found'.
+  ENDIF.
 
   " Clear all entries from the cache
   lo_data_cache->clear( ).
@@ -76,17 +82,21 @@ START-OF-SELECTION.
   ).
 
   " Retrieve a string value from the cache
-  TRY.
-      lo_string_cache->get(
-        EXPORTING
-          key             = 'NAME'
-        IMPORTING
-          value           = DATA(lv_name)
-      ).
-      WRITE: / 'Cached name:', lv_name.
-    CATCH cx_root INTO lx_root.
-      WRITE: / 'Error retrieving cached name:', lx_root->get_text( ).
-  ENDTRY.
+
+  lo_string_cache->get(
+    EXPORTING
+      key             = 'NAME'
+    IMPORTING
+      value           = DATA(lv_name)
+    EXCEPTIONS
+      entry_not_found = 1
+      OTHERS          = 2
+  ).
+  IF sy-subrc EQ 0.
+    WRITE: / 'Cached name:', lv_name.
+  ELSE.
+    WRITE: / 'Entry not found'.
+  ENDIF.
 
   " Example of cache usage with a reference type (CL_SALV_TABLE)
 
@@ -109,15 +119,18 @@ START-OF-SELECTION.
   ).
 
   " Retrieve the ALV table object from the cache
-  TRY.
-      lo_oref_cache->get(
-        EXPORTING
-          key             = 'SALV'
-        IMPORTING
-          value           = DATA(lo_salv2)
-      ).
-      " Display the ALV table
-      lo_salv2->display( ).
-    CATCH cx_root INTO lx_root.
-      WRITE: / 'Error retrieving ALV table from cache:', lx_root->get_text( ).
-  ENDTRY.
+  lo_oref_cache->get(
+    EXPORTING
+      key             = 'SALV'
+    IMPORTING
+      value           = DATA(lo_salv2)
+    EXCEPTIONS
+      entry_not_found = 1
+      OTHERS          = 2
+  ).
+  IF sy-subrc EQ 0.
+    " Display the ALV table
+    lo_salv2->display( ).
+  ELSE.
+    WRITE: / 'Entry not found'.
+  ENDIF.
